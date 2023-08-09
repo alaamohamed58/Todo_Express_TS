@@ -4,7 +4,7 @@ import morgan from "morgan";
 import cors from "cors";
 import helmet from "helmet";
 import Controller from "./utils/interfaces/Controller.interface";
-import errorMiddleware from "./middlewares/error.middleware";
+import errorMiddleware from "./middleware/error.middleware";
 
 class App {
   public express: Application;

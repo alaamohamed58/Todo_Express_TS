@@ -6,6 +6,6 @@ const TodoSchema = new mongoose_1.Schema({
         type: String,
         required: [true, "please write your todo"],
     },
-    data: Date,
+    date: Date,
 });
 exports.default = (0, mongoose_1.model)("Todo", TodoSchema);

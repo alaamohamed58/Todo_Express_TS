@@ -6,7 +6,7 @@ const TodoSchema = new Schema({
     type: String,
     required: [true, "please write your todo"],
   },
-  data: Date,
+  date: Date,
 });
 
 export default model<Todo>("Todo", TodoSchema);

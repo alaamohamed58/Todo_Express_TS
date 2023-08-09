@@ -8,7 +8,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const morgan_1 = __importDefault(require("morgan"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
-const error_middleware_1 = __importDefault(require("./middlewares/error.middleware"));
+const error_middleware_1 = __importDefault(require("./middleware/error.middleware"));
 class App {
     constructor(controllers, port) {
         this.express = (0, express_1.default)();

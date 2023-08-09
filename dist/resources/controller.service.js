@@ -8,7 +8,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const http_exception_1 = __importDefault(require("../utils/exceptions/http.exception"));
+const catchAsync_1 = __importDefault(require("../utils/catchAsync/catchAsync"));
 class FactoryHandler {
     constructor(model) {
         this.model = model;
@@ -16,31 +21,69 @@ class FactoryHandler {
     }
     //create
     createOne() {
-        return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            try {
-                const post = yield this.model.create(req.body);
-                res.status(201).json({
-                    message: "Successfuly created",
-                    data: {
-                        post,
-                    },
-                });
-            }
-            catch (err) {
-                throw new Error("Unable to create post");
-            }
-        });
-    }
-    //get
-    getAll() {
-        return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const post = yield this.model.find();
-            res.status(200).json({
+        return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const model = yield this.model.create(req.body);
+            res.status(201).json({
+                message: "Successfuly created",
                 data: {
-                    post,
+                    model,
                 },
             });
-        });
+        }));
+    }
+    //get all
+    getAll() {
+        return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const model = yield this.model.find();
+            res.status(200).json({
+                data: {
+                    model,
+                },
+            });
+        }));
+    }
+    //get one
+    getOne() {
+        return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const model = yield this.model.findById(req.params.id);
+            if (!model) {
+                return next(new http_exception_1.default("No Model with that id", 404));
+            }
+            res.status(200).json({
+                data: {
+                    model,
+                },
+            });
+        }));
+    }
+    //Delete One
+    deleteOne() {
+        return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const model = yield this.model.findByIdAndDelete(req.params.id);
+            if (!model) {
+                return next(new http_exception_1.default("No Model with that id", 404));
+            }
+            res.status(204).json({
+                message: "Succesfully Deleted",
+            });
+        }));
+    }
+    //Update One
+    updateOne() {
+        return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const model = yield this.model.findByIdAndUpdate(req.params.id, req.body, {
+                runValidators: true,
+            });
+            if (!model) {
+                return next(new http_exception_1.default("No Model with that id", 404));
+            }
+            res.status(200).json({
+                message: "Succesfully Update",
+                data: {
+                    model,
+                },
+            });
+        }));
     }
 }
 exports.default = FactoryHandler;
