@@ -3,8 +3,8 @@ import mongoose from "mongoose";
 import morgan from "morgan";
 import cors from "cors";
 import helmet from "helmet";
-import Controller from "./utils/interfaces/Controller.interface";
 import errorMiddleware from "./middleware/error.middleware";
+import Controller from "./utils/interfaces/controller.interface";
 
 class App {
   public express: Application;

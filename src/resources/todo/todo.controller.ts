@@ -1,7 +1,7 @@
 import { Router } from "express";
-import Controller from "../../utils/interfaces/Controller.interface";
 import Todo from "./todo.model";
 import FactoryHandler from "../controller.service";
+import Controller from "../../utils/interfaces/controller.interface";
 
 class TodoController implements Controller {
   public path = "/todo";
