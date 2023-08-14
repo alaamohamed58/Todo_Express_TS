@@ -1,3 +1,4 @@
+import crypto from "crypto"
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import UserInterface from "./users.interface";
@@ -22,6 +23,8 @@ const UserSchema = new Schema({
     type: String,
     required: [true, "please provide your password confirm"],
   },
+  passwordResetToken: String,
+  passwordResetExpires: Date,
 });
 // Change the regular function to an arrow function
 UserSchema.path("confirmedPassword").validate(function (val: string) {
@@ -43,6 +46,21 @@ UserSchema.methods.verifyPassword = async function (
   enteredPassword: string
 ): Promise<Error | boolean> {
   return await bcrypt.compare(enteredPassword, this.password);
+};
+//generate passwordResetToken
+UserSchema.methods.passwordRandomResetToken = function (): string {
+  const resetToken = crypto.randomBytes(32).toString("hex");
+
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex");
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //expires in 10 mins
+
+  // console.log({ resetToken }, { passReset: this.passwordResetToken });
+
+  return resetToken;
 };
 
 export default model<UserInterface>("User", UserSchema);

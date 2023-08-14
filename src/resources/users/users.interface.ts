@@ -5,8 +5,11 @@ interface UserInterface extends Document {
   email: string;
   password: string;
   confirmedPassword: string | undefined;
+  passwordResetToken: string | undefined;
+  passwordResetExpires: string | undefined;
 
   verifyPassword(password: string): Promise<Error | boolean>;
+  passwordRandomResetToken(): string;
 }
 
 export default UserInterface;

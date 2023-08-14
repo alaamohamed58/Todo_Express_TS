@@ -2,11 +2,12 @@ import { NextFunction, Request, Response, Router } from "express";
 import Controller from "../../utils/interfaces/controller.interface";
 import UserService from "./user.service";
 import catchAsync from "../../utils/catchAsync/catchAsync";
-import User from "./user.model"
 import HttpException from "../../utils/exceptions/http.exception";
 import authenticatedMiddleware from "../../middleware/authenticated.middleware";
+import sendEmail from "../../utils/email";
 
 class UserController implements Controller {
+
   public path = "/user";
   public router = Router();
   private userService = new UserService();
@@ -18,6 +19,7 @@ class UserController implements Controller {
   private initializeRoutes(): void {
     this.router.post(`${this.path}/register`, this.register);
     this.router.post(`${this.path}/login`, this.login);
+    this.router.post(`${this.path}/forgetPassword`, this.forgetPassword);
     this.router.get(`${this.path}`, authenticatedMiddleware, this.getUser);
   }
 
@@ -55,6 +57,41 @@ class UserController implements Controller {
     }
   );
 
+
+  private forgetPassword = catchAsync(async(req:Request, res:Response, next:NextFunction): Promise<void>=>{
+    const {email} = req.body
+
+   const {user, resetToken} =  await this.userService.forgetPassword(email)
+
+    try {
+      const resetURL = `${req.protocol}://${req.get(
+        "host"
+      )}/api/v1/user/resetPassword/${resetToken}`;
+  
+      const message = `Forgot your password ? Submit this link to set new password : ${resetURL}`;
+  
+      await sendEmail({
+        to: user.email,
+        subject: "Reset Password (valid for 10 minutes)",
+        message,
+      });
+      res.status(200).json({
+        message: "token sent to email",
+      });
+    } catch (err) {
+      user.passwordResetToken = undefined;
+      user.passwordResetExpires = undefined;
+      user.save({ validateBeforeSave: false });
+  
+      return next(
+        new HttpException("there was an error sending an email, please try later"+ err, 500)
+      );
+    }
+
+  })
+
+
+
   private getUser = (
     req: Request,
     res: Response,
@@ -65,6 +102,6 @@ class UserController implements Controller {
     }
 
     res.status(200).send({ data: req.user });
-};}
+}}
 
 export default UserController;

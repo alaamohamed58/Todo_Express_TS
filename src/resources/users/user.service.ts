@@ -1,7 +1,7 @@
-
 import User from "./user.model";
 import token from "../../utils/token";
 import HttpException from "../../utils/exceptions/http.exception";
+import UserInterface from "./users.interface";
 
 class UserService {
   private user = User;
@@ -31,7 +31,7 @@ class UserService {
    * Login
    */
 
-  async login(email: string, password: string): Promise<string> {
+  public async login(email: string, password: string): Promise<string> {
     const user = await this.user.findOne({ email });
     if (!email || !password) {
       throw new HttpException("Please provide email and password", 400);
@@ -42,6 +42,25 @@ class UserService {
 
     const accessToken = token.createToken(user);
     return accessToken;
+  }
+
+  /**
+   * Forget Password
+   */
+
+  public async forgetPassword(email: string): Promise<{ resetToken: string, user: UserInterface }> {
+    //find user by email
+    const user = await this.user.findOne({ email });
+
+    if (!user) {
+      throw new HttpException("No User Found", 404);
+    }
+
+    const resetToken = user.passwordRandomResetToken();
+
+    user.save({ validateBeforeSave: false });
+
+    return {resetToken, user}
   }
 }
 

@@ -50,5 +50,20 @@ class UserService {
             return accessToken;
         });
     }
+    /**
+     * Forget Password
+     */
+    forgetPassword(email) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //find user by email
+            const user = yield this.user.findOne({ email });
+            if (!user) {
+                throw new http_exception_1.default("No User Found", 404);
+            }
+            const resetToken = user.passwordRandomResetToken();
+            user.save({ validateBeforeSave: false });
+            return { resetToken, user };
+        });
+    }
 }
 exports.default = UserService;

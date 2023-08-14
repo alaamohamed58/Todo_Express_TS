@@ -17,6 +17,7 @@ const user_service_1 = __importDefault(require("./user.service"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync/catchAsync"));
 const http_exception_1 = __importDefault(require("../../utils/exceptions/http.exception"));
 const authenticated_middleware_1 = __importDefault(require("../../middleware/authenticated.middleware"));
+const email_1 = __importDefault(require("../../utils/email"));
 class UserController {
     constructor() {
         this.path = "/user";
@@ -43,6 +44,28 @@ class UserController {
                 token,
             });
         }));
+        this.forgetPassword = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const { email } = req.body;
+            const { user, resetToken } = yield this.userService.forgetPassword(email);
+            try {
+                const resetURL = `${req.protocol}://${req.get("host")}/api/v1/user/resetPassword/${resetToken}`;
+                const message = `Forgot your password ? Submit this link to set new password : ${resetURL}`;
+                yield (0, email_1.default)({
+                    to: user.email,
+                    subject: "Reset Password (valid for 10 minutes)",
+                    message,
+                });
+                res.status(200).json({
+                    message: "token sent to email",
+                });
+            }
+            catch (err) {
+                user.passwordResetToken = undefined;
+                user.passwordResetExpires = undefined;
+                user.save({ validateBeforeSave: false });
+                return next(new http_exception_1.default("there was an error sending an email, please try later" + err, 500));
+            }
+        }));
         this.getUser = (req, res, next) => {
             if (!req.user) {
                 return next(new http_exception_1.default('No logged in user', 401));
@@ -54,6 +77,7 @@ class UserController {
     initializeRoutes() {
         this.router.post(`${this.path}/register`, this.register);
         this.router.post(`${this.path}/login`, this.login);
+        this.router.post(`${this.path}/forgetPassword`, this.forgetPassword);
         this.router.get(`${this.path}`, authenticated_middleware_1.default, this.getUser);
     }
 }

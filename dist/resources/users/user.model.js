@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = __importDefault(require("crypto"));
 const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const UserSchema = new mongoose_1.Schema({
@@ -33,6 +34,8 @@ const UserSchema = new mongoose_1.Schema({
         type: String,
         required: [true, "please provide your password confirm"],
     },
+    passwordResetToken: String,
+    passwordResetExpires: Date,
 });
 // Change the regular function to an arrow function
 UserSchema.path("confirmedPassword").validate(function (val) {
@@ -53,5 +56,16 @@ UserSchema.methods.verifyPassword = function (enteredPassword) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield bcrypt_1.default.compare(enteredPassword, this.password);
     });
+};
+//generate passwordResetToken
+UserSchema.methods.passwordRandomResetToken = function () {
+    const resetToken = crypto_1.default.randomBytes(32).toString("hex");
+    this.passwordResetToken = crypto_1.default
+        .createHash("sha256")
+        .update(resetToken)
+        .digest("hex");
+    this.passwordResetExpires = Date.now() + 10 * 60 * 1000; //expires in 10 mins
+    // console.log({ resetToken }, { passReset: this.passwordResetToken });
+    return resetToken;
 };
 exports.default = (0, mongoose_1.model)("User", UserSchema);
