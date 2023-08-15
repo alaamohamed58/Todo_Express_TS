@@ -22,7 +22,6 @@ const app = new App(
 );
 const checkTodoDate = async (): Promise<Response | void> => {
   const currentDate = new Date(); // Current date and time
-
   // Set the time component of the current date to the beginning of the day
   currentDate.setHours(0, 0, 0, 0);
 
@@ -34,6 +33,7 @@ const checkTodoDate = async (): Promise<Response | void> => {
       },
       sendEmail: 0,
     });
+    console.log(todos);
 
     const extractedEmails = new Set();
 
@@ -54,10 +54,6 @@ const checkTodoDate = async (): Promise<Response | void> => {
 
     // Send email to each user
     for (const email of uniqueEmailsArray) {
-      if (!email) {
-        console.log("Email");
-        return;
-      }
       await sendEmail({
         to: String(email),
         subject: "Todo Time",
@@ -94,7 +90,7 @@ const checkTodoDate = async (): Promise<Response | void> => {
 };
 
 const job = new CronJob(
-  "30 16 * * *", // Cron expression: Runs at 1:38 PM every day
+  "20 17 * * *", // Cron expression: Runs at 1:38 PM every day
   function () {
     checkTodoDate();
     console.log("Email send at 4:18 PM");
@@ -105,7 +101,6 @@ const job = new CronJob(
 );
 
 job.start();
-
 // //handling uncached routes
 // ex.all("*", (req: Request, res: Response, next: NextFunction) => {
 //   const err = new HttpException(
