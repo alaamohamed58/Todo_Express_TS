@@ -27,7 +27,7 @@ const sendEmail = (options) => __awaiter(void 0, void 0, void 0, function* () {
         from: "alaa@m.com",
         to: options.to,
         subject: options.subject,
-        text: options.text
+        text: options.message,
     };
     yield transporter.sendMail(emailOptions);
 });

@@ -21,6 +21,7 @@
     "@types/jsonwebtoken": "^9.0.2",
     "@types/mongoose": "^5.11.97",
     "@types/morgan": "^1.9.4",
+    "@types/node": "^20.5.0",
     "@types/nodemailer": "^6.4.9"
   },
   "dependencies": {

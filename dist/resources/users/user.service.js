@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const user_model_1 = __importDefault(require("./user.model"));
 const token_1 = __importDefault(require("../../utils/token"));
 const http_exception_1 = __importDefault(require("../../utils/exceptions/http.exception"));
+const token_2 = require("../../utils/token");
 class UserService {
     constructor() {
         this.user = user_model_1.default;
@@ -48,6 +49,30 @@ class UserService {
             }
             const accessToken = token_1.default.createToken(user);
             return accessToken;
+        });
+    }
+    /**
+     * Reset Password
+     */
+    resetPassword(hashedToken, password, confirmedPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            //1) Get the user based on the token and expire date of token
+            const user = yield this.user.findOne({
+                passwordResetToken: hashedToken,
+                passwordResetExpires: { $gt: Date.now() },
+            });
+            //2) if the token is not expired, and there is user, set the new password
+            if (!user) {
+                throw new http_exception_1.default("Token is invalid or has expired", 400);
+            }
+            user.password = password;
+            user.confirmedPassword = confirmedPassword;
+            user.passwordResetToken = undefined;
+            user.passwordResetExpires = undefined;
+            yield user.save();
+            //4) log the user in, send JWT
+            const token = (0, token_2.createToken)(user);
+            return token;
         });
     }
     /**

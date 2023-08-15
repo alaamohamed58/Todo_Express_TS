@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const crypto_1 = __importDefault(require("crypto"));
 const express_1 = require("express");
 const user_service_1 = __importDefault(require("./user.service"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync/catchAsync"));
@@ -23,6 +24,7 @@ class UserController {
         this.path = "/user";
         this.router = (0, express_1.Router)();
         this.userService = new user_service_1.default();
+        //login
         this.login = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
             try {
@@ -36,6 +38,7 @@ class UserController {
                 next(error);
             }
         });
+        //register
         this.register = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { username, email, password, confirmedPassword } = req.body;
             const token = yield this.userService.register(username, email, password, confirmedPassword);
@@ -44,22 +47,36 @@ class UserController {
                 token,
             });
         }));
+        //reset password
+        this.resetPassword = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const hashedToken = crypto_1.default
+                .createHash("sha256")
+                .update(req.params.token)
+                .digest("hex");
+            const { password, confirmedPassword } = req.body;
+            const token = yield this.userService.resetPassword(hashedToken, password, confirmedPassword);
+            res.status(200).json({
+                message: "successfully reset password",
+                token,
+            });
+        }));
+        //forget password
         this.forgetPassword = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { email } = req.body;
             const { user, resetToken } = yield this.userService.forgetPassword(email);
             try {
                 const resetURL = `${req.protocol}://${req.get("host")}/api/v1/user/resetPassword/${resetToken}`;
-                const message = `Forgot your password ? Submit this link to set new password : ${resetURL}`;
                 yield (0, email_1.default)({
                     to: user.email,
-                    subject: "Reset Password (valid for 10 minutes)",
-                    message,
+                    subject: "Reset Password",
+                    message: `Forgot your password ? Submit this link to set new password : ${resetURL}`,
                 });
                 res.status(200).json({
                     message: "token sent to email",
                 });
             }
             catch (err) {
+                console.log(err);
                 user.passwordResetToken = undefined;
                 user.passwordResetExpires = undefined;
                 user.save({ validateBeforeSave: false });
@@ -68,7 +85,7 @@ class UserController {
         }));
         this.getUser = (req, res, next) => {
             if (!req.user) {
-                return next(new http_exception_1.default('No logged in user', 401));
+                return next(new http_exception_1.default("No logged in user", 401));
             }
             res.status(200).send({ data: req.user });
         };
@@ -77,6 +94,7 @@ class UserController {
     initializeRoutes() {
         this.router.post(`${this.path}/register`, this.register);
         this.router.post(`${this.path}/login`, this.login);
+        this.router.post(`${this.path}/resetPassword/:token`, this.resetPassword);
         this.router.post(`${this.path}/forgetPassword`, this.forgetPassword);
         this.router.get(`${this.path}`, authenticated_middleware_1.default, this.getUser);
     }

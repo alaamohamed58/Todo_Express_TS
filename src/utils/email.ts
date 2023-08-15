@@ -1,13 +1,11 @@
 import nodemailer from "nodemailer";
 
-
 interface EmailInterface {
-    from : string
-    to : string
-    subject:string
-    text: string
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
 }
-
 
 const sendEmail = async (options: Record<string, string>) => {
   const transporter = nodemailer.createTransport({
@@ -20,13 +18,13 @@ const sendEmail = async (options: Record<string, string>) => {
   });
 
   //EMAL OPTIONS
-  const emailOptions :EmailInterface = {
-    from : "alaa@m.com",
-    to : options.to,
+  const emailOptions: EmailInterface = {
+    from: "alaa@m.com",
+    to: options.to,
     subject: options.subject,
-    text: options.text
-  }
+    text: options.message,
+  };
 
-  await transporter.sendMail(emailOptions)
+  await transporter.sendMail(emailOptions);
 };
-export default sendEmail
+export default sendEmail;
