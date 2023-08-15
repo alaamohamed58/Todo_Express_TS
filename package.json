@@ -42,12 +42,12 @@
     "tsc-watch": "^6.0.4",
     "typescript": "^5.1.6"
   },
-  "engines": {
-    "node" : ">=16.0.0"
-  },
   "_moduleAliases": {
     "@resources/*": "dist/resources/*",
     "@utils": "dist/utils/*",
     "@middleware": "dist/middleware/*"
+  },
+    "engines": {
+    "node" : ">=16.0.0"
   }
 }
