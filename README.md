@@ -1,4 +1,4 @@
-# ToDo App Backend README
+# TODO App Backend README
 
 Welcome to the README file for the **ToDo App Backend**, developed using Express.js, TypeScript, and Object-Oriented Programming (OOP) principles.
 
