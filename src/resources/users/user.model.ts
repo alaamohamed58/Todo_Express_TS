@@ -1,4 +1,4 @@
-import crypto from "crypto"
+import crypto from "crypto";
 import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import UserInterface from "./users.interface";
@@ -43,9 +43,10 @@ UserSchema.pre<UserInterface>("save", async function (next) {
 });
 
 UserSchema.methods.verifyPassword = async function (
-  enteredPassword: string
-): Promise<Error | boolean> {
-  return await bcrypt.compare(enteredPassword, this.password);
+  enteredPassword: string,
+  password: string
+): Promise<String | boolean> {
+  return await bcrypt.compare(enteredPassword, password);
 };
 //generate passwordResetToken
 UserSchema.methods.passwordRandomResetToken = function (): string {

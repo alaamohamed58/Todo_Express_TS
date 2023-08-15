@@ -2,6 +2,10 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const TodoSchema = new mongoose_1.Schema({
+    user: {
+        type: mongoose_1.Schema.ObjectId,
+        ref: "User",
+    },
     todo: {
         type: String,
         required: [true, "please write your todo"],

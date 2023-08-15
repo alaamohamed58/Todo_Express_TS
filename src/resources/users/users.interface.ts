@@ -8,7 +8,10 @@ interface UserInterface extends Document {
   passwordResetToken: string | undefined;
   passwordResetExpires: string | undefined;
 
-  verifyPassword(password: string): Promise<Error | boolean>;
+  verifyPassword(
+    password: string,
+    enteredPassword: string
+  ): Promise<Error | boolean>;
   passwordRandomResetToken(): string;
 }
 

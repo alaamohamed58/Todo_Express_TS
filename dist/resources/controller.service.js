@@ -22,7 +22,7 @@ class FactoryHandler {
     //create
     createOne() {
         return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const model = yield this.model.create(req.body);
+            const model = yield this.model.create(Object.assign(Object.assign({}, req.body), { user: req.user.id }));
             res.status(201).json({
                 message: "Successfuly created",
                 data: {
@@ -34,7 +34,7 @@ class FactoryHandler {
     //get all
     getAll() {
         return (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const model = yield this.model.find();
+            const model = yield this.model.find({ user: req.user._id });
             res.status(200).json({
                 data: {
                     model,

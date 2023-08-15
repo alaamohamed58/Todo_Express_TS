@@ -52,9 +52,9 @@ UserSchema.pre("save", function (next) {
         next();
     });
 });
-UserSchema.methods.verifyPassword = function (enteredPassword) {
+UserSchema.methods.verifyPassword = function (enteredPassword, password) {
     return __awaiter(this, void 0, void 0, function* () {
-        return yield bcrypt_1.default.compare(enteredPassword, this.password);
+        return yield bcrypt_1.default.compare(enteredPassword, password);
     });
 };
 //generate passwordResetToken

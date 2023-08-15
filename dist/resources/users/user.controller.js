@@ -24,6 +24,15 @@ class UserController {
         this.path = "/user";
         this.router = (0, express_1.Router)();
         this.userService = new user_service_1.default();
+        //register
+        this.register = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const { username, email, password, confirmedPassword } = req.body;
+            const token = yield this.userService.register(username, email, password, confirmedPassword);
+            res.status(201).json({
+                message: "Successfully registered",
+                token,
+            });
+        }));
         //login
         this.login = (req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const { email, password } = req.body;
@@ -38,15 +47,6 @@ class UserController {
                 next(error);
             }
         });
-        //register
-        this.register = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
-            const { username, email, password, confirmedPassword } = req.body;
-            const token = yield this.userService.register(username, email, password, confirmedPassword);
-            res.status(201).json({
-                message: "Successfully registered",
-                token,
-            });
-        }));
         //reset password
         this.resetPassword = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
             const hashedToken = crypto_1.default
@@ -83,6 +83,16 @@ class UserController {
                 return next(new http_exception_1.default("there was an error sending an email, please try later" + err, 500));
             }
         }));
+        //update password
+        this.updatePassword = (0, catchAsync_1.default)((req, res, next) => __awaiter(this, void 0, void 0, function* () {
+            const { password, newPassword } = req.body;
+            const token = yield this.userService.updatePassword(req.user, password, newPassword);
+            res.status(200).json({
+                message: "successfully updated password",
+                token,
+            });
+        }));
+        //get current user
         this.getUser = (req, res, next) => {
             if (!req.user) {
                 return next(new http_exception_1.default("No logged in user", 401));
@@ -94,8 +104,9 @@ class UserController {
     initializeRoutes() {
         this.router.post(`${this.path}/register`, this.register);
         this.router.post(`${this.path}/login`, this.login);
-        this.router.post(`${this.path}/resetPassword/:token`, this.resetPassword);
         this.router.post(`${this.path}/forgetPassword`, this.forgetPassword);
+        this.router.post(`${this.path}/resetPassword/:token`, this.resetPassword);
+        this.router.post(`${this.path}/updatePassword`, authenticated_middleware_1.default, this.updatePassword);
         this.router.get(`${this.path}`, authenticated_middleware_1.default, this.getUser);
     }
 }

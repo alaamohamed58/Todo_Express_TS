@@ -19,29 +19,15 @@ class UserController implements Controller {
   private initializeRoutes(): void {
     this.router.post(`${this.path}/register`, this.register);
     this.router.post(`${this.path}/login`, this.login);
-    this.router.post(`${this.path}/resetPassword/:token`, this.resetPassword);
-
     this.router.post(`${this.path}/forgetPassword`, this.forgetPassword);
+    this.router.post(`${this.path}/resetPassword/:token`, this.resetPassword);
+    this.router.post(
+      `${this.path}/updatePassword`,
+      authenticatedMiddleware,
+      this.updatePassword
+    );
     this.router.get(`${this.path}`, authenticatedMiddleware, this.getUser);
   }
-
-  //login
-  private login = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void> => {
-    const { email, password } = req.body;
-    try {
-      const token = await this.userService.login(email, password);
-      res.status(200).json({
-        message: "Successfully logged in",
-        token,
-      });
-    } catch (error) {
-      next(error);
-    }
-  };
   //register
   private register = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -59,7 +45,23 @@ class UserController implements Controller {
       });
     }
   );
-
+  //login
+  private login = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    const { email, password } = req.body;
+    try {
+      const token = await this.userService.login(email, password);
+      res.status(200).json({
+        message: "Successfully logged in",
+        token,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
   //reset password
   private resetPassword = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -81,7 +83,6 @@ class UserController implements Controller {
       });
     }
   );
-
   //forget password
   private forgetPassword = catchAsync(
     async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -117,6 +118,26 @@ class UserController implements Controller {
       }
     }
   );
+  //update password
+  private updatePassword = catchAsync(
+    async (
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ): Promise<Response | void> => {
+      const { password, newPassword } = req.body;
+      const token = await this.userService.updatePassword(
+        req.user,
+        password,
+        newPassword
+      );
+      res.status(200).json({
+        message: "successfully updated password",
+        token,
+      });
+    }
+  );
+  //get current user
   private getUser = (
     req: Request,
     res: Response,

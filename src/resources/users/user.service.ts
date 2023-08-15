@@ -36,7 +36,7 @@ class UserService {
     if (!email || !password) {
       throw new HttpException("Please provide email and password", 400);
     }
-    if (!user || !(await user.verifyPassword(password))) {
+    if (!user || !(await user.verifyPassword(password, user.password))) {
       throw new HttpException("Incorrect email or password", 401);
     }
 
@@ -89,6 +89,36 @@ class UserService {
     user.save({ validateBeforeSave: false });
 
     return { resetToken, user };
+  }
+
+  /**
+   * Update Password
+   */
+
+  public async updatePassword(
+    currentUser: UserInterface,
+    password: string,
+    newPassword: string
+  ): Promise<string> {
+    if (!password || !newPassword) {
+      throw new HttpException("Please provide Password and new Password", 400);
+    }
+    const user = await this.user.findById(currentUser.id).select("+password");
+    //check if user exists
+    if (!user) {
+      throw new HttpException("No User Found", 404);
+    }
+
+    //check if password is correct
+    if (!(await user.verifyPassword(password, user.password))) {
+      throw new HttpException("Incorrect password", 401);
+    }
+
+    user.password = newPassword;
+    await user.save({ validateBeforeSave: false });
+
+    const token = createToken(user);
+    return token;
   }
 }
 

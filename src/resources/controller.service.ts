@@ -15,7 +15,10 @@ class FactoryHandler<T extends Document> {
         res: Response,
         next: NextFunction
       ): Promise<Response | void> => {
-        const model = await this.model.create(req.body);
+        const model = await this.model.create({
+          ...req.body,
+          user: req.user.id,
+        });
         res.status(201).json({
           message: "Successfuly created",
           data: {
@@ -33,7 +36,7 @@ class FactoryHandler<T extends Document> {
         res: Response,
         next: NextFunction
       ): Promise<Response | void> => {
-        const model = await this.model.find();
+        const model = await this.model.find({ user: req.user._id });
         res.status(200).json({
           data: {
             model,

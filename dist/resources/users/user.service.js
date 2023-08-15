@@ -44,7 +44,7 @@ class UserService {
             if (!email || !password) {
                 throw new http_exception_1.default("Please provide email and password", 400);
             }
-            if (!user || !(yield user.verifyPassword(password))) {
+            if (!user || !(yield user.verifyPassword(password, user.password))) {
                 throw new http_exception_1.default("Incorrect email or password", 401);
             }
             const accessToken = token_1.default.createToken(user);
@@ -88,6 +88,29 @@ class UserService {
             const resetToken = user.passwordRandomResetToken();
             user.save({ validateBeforeSave: false });
             return { resetToken, user };
+        });
+    }
+    /**
+     * Update Password
+     */
+    updatePassword(currentUser, password, newPassword) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!password || !newPassword) {
+                throw new http_exception_1.default("Please provide Password and new Password", 400);
+            }
+            const user = yield this.user.findById(currentUser.id).select("+password");
+            //check if user exists
+            if (!user) {
+                throw new http_exception_1.default("No User Found", 404);
+            }
+            //check if password is correct
+            if (!(yield user.verifyPassword(password, user.password))) {
+                throw new http_exception_1.default("Incorrect password", 401);
+            }
+            user.password = newPassword;
+            yield user.save({ validateBeforeSave: false });
+            const token = (0, token_2.createToken)(user);
+            return token;
         });
     }
 }
