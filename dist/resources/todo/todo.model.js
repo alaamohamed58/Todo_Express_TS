@@ -11,5 +11,9 @@ const TodoSchema = new mongoose_1.Schema({
         required: [true, "please write your todo"],
     },
     date: Date,
+    sendEmail: {
+        type: Number,
+        default: 0,
+    },
 });
 exports.default = (0, mongoose_1.model)("Todo", TodoSchema);

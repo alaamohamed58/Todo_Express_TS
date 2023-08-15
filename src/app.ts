@@ -5,6 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import errorMiddleware from "./middleware/error.middleware";
 import Controller from "./utils/interfaces/Controller.interface";
+import TodoController from "./resources/todo/todo.controller";
 
 class App {
   public express: Application;

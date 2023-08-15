@@ -85,7 +85,6 @@ class FactoryHandler<T extends Document> {
       }
     );
   }
-
   //Update One
   public updateOne() {
     return catchAsync(

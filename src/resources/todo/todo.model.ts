@@ -11,6 +11,10 @@ const TodoSchema = new Schema({
     required: [true, "please write your todo"],
   },
   date: Date,
+  sendEmail: {
+    type: Number,
+    default: 0,
+  },
 });
 
 export default model<Todo>("Todo", TodoSchema);
