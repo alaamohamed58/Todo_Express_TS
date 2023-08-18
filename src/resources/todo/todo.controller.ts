@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response, Router } from "express";
 import Todo from "./todo.model";
 import FactoryHandler from "../controller.service";
-import Controller from "../../utils/interfaces/Controller.interface";
+import Controller from "../../utils/interfaces/controller.interface";
 import authenticatedMiddleware from "../../middleware/authenticated.middleware";
 import catchAsync from "../../utils/catchAsync/catchAsync";
 
