@@ -89,7 +89,7 @@ const checkTodoDate = async (): Promise<Response | void> => {
 };
 
 const job = new CronJob(
-  "55 10 * * *", // Cron expression: Runs at 1:38 PM every day
+  "05 11 * * *", // Cron expression: Runs at 1:38 PM every day
   function () {
     checkTodoDate();
     console.log("Email send at 4:18 PM");
