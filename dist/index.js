@@ -84,7 +84,7 @@ const checkTodoDate = () => __awaiter(void 0, void 0, void 0, function* () {
         console.error("Error fetching todos:", error);
     }
 });
-const job = new cron_1.CronJob("44 10 * * *", // Cron expression: Runs at 1:38 PM every day
+const job = new cron_1.CronJob("18 11 * * *", // Cron expression: Runs at 1:38 PM every day
 function () {
     checkTodoDate();
     console.log("Email send at 4:18 PM");

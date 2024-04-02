@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextFunction, Request, Response, Router } from "express";
-import Controller from "../../utils/interfaces/controller.interface";
+import Controller from "../../utils/interfaces/Controller.interface";
 import UserService from "./user.service";
 import catchAsync from "../../utils/catchAsync/catchAsync";
 import HttpException from "../../utils/exceptions/http.exception";
